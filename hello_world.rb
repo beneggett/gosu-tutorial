@@ -4,8 +4,10 @@ module ZOrder
   Background, Stars, Player, UI = *0..3
 end
 
+# Main loop
 class GameWindow < Gosu::Window
   def initialize
+    # height, width, fullscreen
     super(640, 480, false)
     self.caption = "Gosu Tutorial Game"
 
@@ -14,20 +16,20 @@ class GameWindow < Gosu::Window
     @player = Player.new(self)
     @player.warp(320, 240)
 
-    @star_anim = Gosu::Image::load_tiles(self, "assets/mario.png", 25, 25, false)
+    @star_anim = Gosu::Image::load_tiles(self, "assets/coin.gif", 25, 25, false)
     @stars = Array.new
 
     @font = Gosu::Font.new(self, Gosu::default_font_name, 20)
   end
 
   def update
-    if button_down? Gosu::KbLeft or button_down? Gosu::GpLeft then
+    if button_down? Gosu::KbLeft then
       @player.turn_left
     end
-    if button_down? Gosu::KbRight or button_down? Gosu::GpRight then
+    if button_down? Gosu::KbRight then
       @player.turn_right
     end
-    if button_down? Gosu::KbUp or button_down? Gosu::GpButton0 then
+    if button_down? Gosu::KbUp  then
       @player.accelerate
     end
     @player.move
@@ -53,6 +55,7 @@ class GameWindow < Gosu::Window
 end
 
 class Player
+  # Initializes the player object, takes a window where the image should be drawn
   def initialize(window)
     @image = Gosu::Image.new(window, "assets/mario.png", false)
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
