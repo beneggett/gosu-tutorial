@@ -22,6 +22,7 @@ class GameWindow < Gosu::Window
     @projectiles = Array.new
 
     @font = Gosu::Font.new(self, Gosu::default_font_name, 20)
+    @bg_music = Gosu::Song.new(self, "assets/zelda.mp3").play(true)
   end
 
   def update
@@ -127,12 +128,14 @@ end
 class Projectile
   def initialize(window, playerx, playery, playerangle)
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
+    @fire = Gosu::Sample.new(window, "assets/hadouken.mp3").play
     @image = Gosu::Image.new(window, ["assets/hadouken.png", "assets/hadouken-red.png"].sample)
     @x = playerx
     @y = playery
     @angle = playerangle
     @vel_x = 0
     @vel_y = 0
+
   end
 
   def accelerate
@@ -143,6 +146,7 @@ class Projectile
    def move
     @x += @vel_x * 2
     @y += @vel_y * 2
+
     # @x %= 1280
     # @y %= 960
   end
@@ -150,6 +154,7 @@ class Projectile
   def draw
     @image.draw_rot(@x, @y, ZOrder::Projectile, @angle)
     self.accelerate
+
   end 
 
   def collect_stars(stars)
