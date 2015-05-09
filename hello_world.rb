@@ -22,8 +22,11 @@ class GameWindow < Gosu::Window
     @projectiles = Array.new
 
     @font = Gosu::Font.new(self, Gosu::default_font_name, 20)
-    @bg_music = Gosu::Song.new(self, "assets/zelda.mp3").play(true)
+    @bg_music = Gosu::Song.new(self, "assets/zelda.mp3")
+    @bg_music.play(true)
     $timer = 0
+
+    $specials = 5
   end
 
   def update
@@ -36,27 +39,35 @@ class GameWindow < Gosu::Window
     if button_down? Gosu::KbUp  then
       @player.accelerate
     end
+    if button_down? Gosu::KbDown  then
+      @player.decelerate
+    end    
     @player.move
     @projectiles.each do |projectile| 
       projectile.move
-      projectile.collect_stars(@stars)
+      @projectiles.delete projectile if projectile.special && (projectile.start_timer + 250) < $timer
+      projectile.collect_stars(@stars, @projectiles)
     end
     $timer += 1
-    
+    $level = ($timer / 100.to_i)
+    if $timer % 1000 == 0
+      $specials += 1 
+    end
+
     case 
-    when $timer < 500
+    when $level < 5
       size = 3
-    when $timer < 1000
+    when $level < 10
       size = 5
-    when $timer < 2000
+    when $level < 20
       size = 10      
-    when $timer < 3000
+    when $level < 30
       size = 20   
-    when $timer < 4000
+    when $level < 40
       size = 40   
-    when $timer < 5000
+    when $level < 50
       size = 60
-    when $timer < 6000
+    when $level < 60
       size = 100
     else
       size = rand(100..10000)
@@ -66,6 +77,9 @@ class GameWindow < Gosu::Window
     end
 
     if $score < 0 
+      $score = 0
+      Gosu::Sample.new(self, "assets/death.mp3").play
+      sleep 2
       self.close
     end
   end
@@ -76,7 +90,8 @@ class GameWindow < Gosu::Window
     @stars.each { |star| star.draw }
     @projectiles.each{ |projectile| projectile.draw }
     @font.draw("Score: #{$score}", 10, 10, ZOrder::UI, 1.0, 1.0, 0xffffff00)
-    @font.draw("Level: #{$timer / 100.to_i}", 800, 10, ZOrder::UI, 1.0, 1.0, 0xffffff00)
+    @font.draw("Level: #{$level}", 800, 10, ZOrder::UI, 1.0, 1.0, 0xffffff00)
+    @font.draw("Specials: #{$specials}", 800, 40, ZOrder::UI, 1.0, 1.0, 0xffffff00)
   end
 
   def button_down(id)
@@ -84,6 +99,11 @@ class GameWindow < Gosu::Window
       close
     elsif id == Gosu::KbSpace
       @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle))
+    elsif id == Gosu::KbReturn
+      if $specials >= 1
+        @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle, true)) 
+        $specials -= 1
+      end
     end
   end
 end
@@ -114,6 +134,11 @@ class Player
     @vel_x += Gosu::offset_x(@angle, 0.5)
     @vel_y += Gosu::offset_y(@angle, 0.5)
   end
+  
+  def decelerate
+    @vel_x += Gosu::offset_x(- @angle, 0.5)
+    @vel_y += Gosu::offset_y(- @angle, 0.5)
+  end  
 
   def move
     @x += @vel_x
@@ -121,8 +146,8 @@ class Player
     @x %= 1280
     @y %= 960
 
-    @vel_x *= 0.95
-    @vel_y *= 0.95
+    @vel_x *= 0.995
+    @vel_y *= 0.995
   end
 
   def draw
@@ -155,7 +180,7 @@ class Star
 
 
   def attack_player
-    if Gosu::distance(@x, @y, @player.x, @player.y) < 200 then
+    if Gosu::distance(@x, @y, @player.x, @player.y) < 200 && $timer % 5 == 0 then
       dmg = 1
       case 
       when $timer < 200
@@ -184,15 +209,19 @@ class Star
 end
 
 class Projectile
-  def initialize(window, playerx, playery, playerangle)
+  attr_accessor :start_timer, :special
+  def initialize(window, playerx, playery, playerangle, special = false)
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
     @fire = Gosu::Sample.new(window, "assets/hadouken.mp3").play
     @image = Gosu::Image.new(window, ["assets/hadouken.png", "assets/hadouken-red.png"].sample)
+    @image = Gosu::Image.new(window, "assets/coin.jpeg") if @special
     @x = playerx
     @y = playery
     @angle = playerangle
     @vel_x = 0
     @vel_y = 0
+    @special = special
+    @start_timer = $timer if @special
 
   end
 
@@ -204,22 +233,23 @@ class Projectile
    def move
     @x += @vel_x * 2
     @y += @vel_y * 2
-
-    # @x %= 1280
-    # @y %= 960
+    if @special
+      @x %= 1280
+      @y %= 960
+    end
   end
   
   def draw
     @image.draw_rot(@x, @y, ZOrder::Projectile, @angle)
     self.accelerate
-
   end 
 
-  def collect_stars(stars)
+  def collect_stars(stars, projectiles)
     stars.reject! do |star|
       if Gosu::distance(@x, @y, star.x, star.y) < 200 then
         $score += 10
         @beep.play
+        projectiles.delete self unless @special
         true
       else
         false
@@ -227,6 +257,16 @@ class Projectile
     end
   end
 end
+
+
+class GameOverWindow < Gosu::Window
+  def initialize
+    super(1280, 960, false)
+    self.caption = "Game over"
+    @background_image = Gosu::Image.new(self, "assets/space.jpg", true)
+  end
+end
+
 
 window = GameWindow.new
 window.show
