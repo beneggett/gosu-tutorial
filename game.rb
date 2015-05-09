@@ -38,7 +38,7 @@ class GameWindow < Gosu::Window
     @player.move
     @projectiles.each do |projectile| 
       projectile.move
-      @projectiles.delete projectile if projectile.special && (projectile.enemyt_timer + 250) < $timer
+      @projectiles.delete projectile if projectile.special && (projectile.enemy_timer + 250) < $timer
       projectile.collect_enemies(@enemies, @projectiles)
     end
     $timer += 1
@@ -82,7 +82,7 @@ class GameWindow < Gosu::Window
     @player.draw
     @enemies.each { |enemy| enemy.draw }
     @projectiles.each{ |projectile| projectile.draw }
-    @font.draw("Score: #{$score}", 10, 10, ZOrder::UI, 1.0, 1.0, 0xffffff00)
+    @font.draw("Energy: #{$score}", 10, 10, ZOrder::UI, 1.0, 1.0, 0xffffff00)
     @font.draw("Specials: #{$specials}", 500, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::GREEN)
     @font.draw("Level: #{$level}", 1000, 10, ZOrder::UI, 1.0, 1.0, Gosu::Color::CYAN)
   end

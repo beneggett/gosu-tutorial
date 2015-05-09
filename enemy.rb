@@ -7,7 +7,6 @@ class Enemy
     @y = rand * 960
     @player = player
     @window = window
-    
   end
 
   def draw  

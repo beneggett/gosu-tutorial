@@ -1,19 +1,18 @@
 
 class Projectile
-  attr_accessor :enemyt_timer, :special
+  attr_accessor :enemy_timer, :special
   def initialize(window, playerx, playery, playerangle, special = false)
+    @special = special
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
     @fire = Gosu::Sample.new(window, "assets/hadouken.mp3").play
     @image = Gosu::Image.new(window, ["assets/hadouken.png", "assets/hadouken-red.png"].sample)
-    @image = Gosu::Image.new(window, "assets/coin.jpeg") if @special
+    @image = Gosu::Image.new(window, "assets/hadouken-green.png") if @special
     @x = playerx
     @y = playery
     @angle = playerangle
     @vel_x = 0
     @vel_y = 0
-    @special = special
-    @enemyt_timer = $timer if @special
-
+    @enemy_timer = $timer if @special
   end
 
   def accelerate
