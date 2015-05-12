@@ -8,12 +8,21 @@ class Enemy
     @player = player
     @window = window
     @life = life
+    @font = Gosu::Font.new(window, Gosu::default_font_name, 50)
+    @color = Gosu::Color.new(0xff000000)
+    @color.red = @color.green = @color.blue = 255
+    if life > 1
+      @color.red = rand(256 - 40) + 40
+      @color.green = rand(256 - 40) + 40
+      @color.blue = rand(256 - 40) + 40
+    end
   end
 
   def draw  
     img = @animation[Gosu::milliseconds / 100 % @animation.size];
     img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
-        ZOrder::Enemys, 1, 1)
+        ZOrder::Enemies, 1, 1, @color)
+    @font.draw("️#{'♥' * life}", x, y + 100, ZOrder::UI, 1.0, 1.0, Gosu::Color::FUCHSIA)
     attack_player
   end
 

@@ -67,9 +67,8 @@ class GameWindow < Gosu::Window
     end  
     if rand(100) < 4 and @enemies.size < size then
       life = 1
-      life = rand(25) if $level > 30
+      life = rand(10) if $level > 30 && rand(100) < (3 + $level / 10).to_i
       @enemies.push(Enemy.new(@enemy_anim, self, @player, life))
-      # @enemies.push(Enemy.new(@enemy_anim, self, @player))
     end
 
     if $score < 0 
@@ -94,13 +93,15 @@ class GameWindow < Gosu::Window
     if id == Gosu::KbEscape
       close
     elsif id == Gosu::KbSpace
-      if $timer > ($last_fired + 30)
+      if $timer > ($last_fired + 20)
         @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle))
         $last_fired = $timer
+        3.times { @player.decelerate }
       end
     elsif id == Gosu::KbReturn
       if $specials >= 1
         @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle, true)) 
+        10.times { @player.decelerate }
         $specials -= 1
       end
     end

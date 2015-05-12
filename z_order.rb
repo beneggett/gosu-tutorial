@@ -1,3 +1,3 @@
 module ZOrder
-  Background, Enemys, Player, Projectile, UI = *0..4
+  Background, Enemies, Player, Projectile, UI = *0..4
 end
