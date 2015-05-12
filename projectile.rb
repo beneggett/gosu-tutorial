@@ -37,10 +37,16 @@ class Projectile
   def collect_enemies(enemies, projectiles)
     enemies.reject! do |enemy|
       if Gosu::distance(@x, @y, enemy.x, enemy.y) < 200 then
+        enemy.life -= 1
         $score += 10
         @beep.play
         projectiles.delete self unless @special
-        true
+        if enemy.life < 1
+          $score += 20
+          true
+        else
+          false
+        end
       else
         false
       end

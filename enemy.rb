@@ -1,12 +1,13 @@
 class Enemy
-  attr_reader :x, :y, :window, :player
+  attr_accessor :x, :y, :window, :player, :life
 
-  def initialize(animation, window, player)
+  def initialize(animation, window, player, life = 1)
     @animation = animation
     @x = rand * 1280
     @y = rand * 960
     @player = player
     @window = window
+    @life = life
   end
 
   def draw  
@@ -18,7 +19,7 @@ class Enemy
 
 
   def attack_player
-    if $timer > 75 && Gosu::distance(@x, @y, @player.x, @player.y) < 200 && $timer % 5 == 0 then
+    if $timer > 100 && Gosu::distance(@x, @y, @player.x, @player.y) < 200 && $timer % 5 == 0 then
       dmg = 1
       case 
       when $level < 2

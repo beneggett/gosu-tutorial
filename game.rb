@@ -18,7 +18,7 @@ class GameWindow < Gosu::Window
     @bg_music = Gosu::Song.new(self, "assets/zelda.mp3")
     @bg_music.play(true)
     $timer = 0
-
+    $last_fired = 0
     $specials = 5
   end
 
@@ -66,7 +66,10 @@ class GameWindow < Gosu::Window
       size = rand(100..10000)
     end  
     if rand(100) < 4 and @enemies.size < size then
-      @enemies.push(Enemy.new(@enemy_anim, self, @player))
+      life = 1
+      life = rand(25) if $level > 30
+      @enemies.push(Enemy.new(@enemy_anim, self, @player, life))
+      # @enemies.push(Enemy.new(@enemy_anim, self, @player))
     end
 
     if $score < 0 
@@ -91,7 +94,10 @@ class GameWindow < Gosu::Window
     if id == Gosu::KbEscape
       close
     elsif id == Gosu::KbSpace
-      @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle))
+      if $timer > ($last_fired + 30)
+        @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle))
+        $last_fired = $timer
+      end
     elsif id == Gosu::KbReturn
       if $specials >= 1
         @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle, true)) 
