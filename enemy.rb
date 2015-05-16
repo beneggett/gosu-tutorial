@@ -22,7 +22,7 @@ class Enemy
     img = @animation[Gosu::milliseconds / 100 % @animation.size];
     img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
         ZOrder::Enemies, 1, 1, @color)
-    @font.draw("️#{'♥' * life}", x, y + 100, ZOrder::UI, 1.0, 1.0, Gosu::Color::FUCHSIA)
+    @font.draw("️#{'♥' * life}", x, y + 70, ZOrder::UI, 1.0, 1.0, Gosu::Color::FUCHSIA)
     attack_player
   end
 
