@@ -37,8 +37,8 @@ class Player
     @x %= 1280
     @y %= 960
 
-    @vel_x *= 0.985
-    @vel_y *= 0.985
+    @vel_x *= 0.99
+    @vel_y *= 0.99
   end
 
   def draw

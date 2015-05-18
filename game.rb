@@ -18,7 +18,7 @@ class GameWindow < Gosu::Window
     @bg_music = Gosu::Song.new(self, "assets/zelda.mp3")
     @bg_music.play(true)
     $timer = 0
-
+    $last_fired = 0
     $specials = 5
   end
 
@@ -34,9 +34,9 @@ class GameWindow < Gosu::Window
     end
     if button_down? Gosu::KbDown  then
       @player.decelerate
-    end    
+    end
     @player.move
-    @projectiles.each do |projectile| 
+    @projectiles.each do |projectile|
       projectile.move
       @projectiles.delete projectile if projectile.special && (projectile.enemy_timer + 250) < $timer
       projectile.collect_enemies(@enemies, @projectiles)
@@ -44,32 +44,34 @@ class GameWindow < Gosu::Window
     $timer += 1
     $level = ($timer / 100.to_i)
     if $timer % 1000 == 0
-      $specials += 1 
+      $specials += 1
     end
 
-    case 
+    case
     when $level < 5
       size = 3
     when $level < 10
       size = 5
     when $level < 20
-      size = 10      
+      size = 10
     when $level < 30
-      size = 20   
+      size = 20
     when $level < 40
-      size = 40   
+      size = 40
     when $level < 50
       size = 60
     when $level < 60
       size = 100
     else
       size = rand(100..10000)
-    end  
+    end
     if rand(100) < 4 and @enemies.size < size then
-      @enemies.push(Enemy.new(@enemy_anim, self, @player))
+      life = 1
+      life = rand(10) if $level > 30 && rand(100) < (3 + $level / 10).to_i
+      @enemies.push(Enemy.new(@enemy_anim, self, @player, life))
     end
 
-    if $score < 0 
+    if $score < 0
       $score = 0
       Gosu::Sample.new(self, "assets/death.mp3").play
       sleep 2
@@ -91,10 +93,15 @@ class GameWindow < Gosu::Window
     if id == Gosu::KbEscape
       close
     elsif id == Gosu::KbSpace
-      @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle))
+      if $timer > ($last_fired + 20)
+        @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle))
+        $last_fired = $timer
+        3.times { @player.decelerate }
+      end
     elsif id == Gosu::KbReturn
       if $specials >= 1
-        @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle, true)) 
+        @projectiles.push(Projectile.new(self, @player.x, @player.y, @player.angle, true))
+        10.times { @player.decelerate }
         $specials -= 1
       end
     end

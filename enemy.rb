@@ -1,24 +1,34 @@
 class Enemy
-  attr_reader :x, :y, :window, :player
+  attr_accessor :x, :y, :window, :player, :life
 
-  def initialize(animation, window, player)
+  def initialize(animation, window, player, life = 1)
     @animation = animation
     @x = rand * 1280
     @y = rand * 960
     @player = player
     @window = window
+    @life = life
+    @font = Gosu::Font.new(window, Gosu::default_font_name, 50)
+    @color = Gosu::Color.new(0xff000000)
+    @color.red = @color.green = @color.blue = 255
+    if life > 1
+      @color.red = rand(256 - 40) + 40
+      @color.green = rand(256 - 40) + 40
+      @color.blue = rand(256 - 40) + 40
+    end
   end
 
   def draw  
     img = @animation[Gosu::milliseconds / 100 % @animation.size];
     img.draw(@x - img.width / 2.0, @y - img.height / 2.0,
-        ZOrder::Enemys, 1, 1)
+        ZOrder::Enemies, 1, 1, @color)
+    @font.draw("️#{'♥' * life}", x, y + 70, ZOrder::UI, 1.0, 1.0, Gosu::Color::FUCHSIA)
     attack_player
   end
 
 
   def attack_player
-    if $timer > 75 && Gosu::distance(@x, @y, @player.x, @player.y) < 200 && $timer % 5 == 0 then
+    if $timer > 100 && Gosu::distance(@x, @y, @player.x, @player.y) < 200 && $timer % 5 == 0 then
       dmg = 1
       case 
       when $level < 2
