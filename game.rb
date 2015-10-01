@@ -1,7 +1,7 @@
 class GameWindow < Gosu::Window
   def initialize
     # height, width, fullscreen
-    super(1280, 960, false)
+    super(1280, 960, true)
     self.caption = "Gosu Tutorial Game"
 
     @background_image = Gosu::Image.new(self, "assets/space.jpg", true)
@@ -15,7 +15,8 @@ class GameWindow < Gosu::Window
     @projectiles = Array.new
 
     @font = Gosu::Font.new(self, Gosu::default_font_name, 36)
-    @bg_music = Gosu::Song.new(self, "assets/zelda.mp3")
+    @bg_music = Gosu::Song.new(self, "assets/awesome.mp3")
+
     @bg_music.play(true)
     $timer = 0
     $last_fired = 0

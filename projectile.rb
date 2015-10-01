@@ -4,9 +4,11 @@ class Projectile
   def initialize(window, playerx, playery, playerangle, special = false)
     @special = special
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
+    # @beep = Gosu::Sample.new(window, "assets/cole-attack.m4a") if @special
     @fire = Gosu::Sample.new(window, "assets/hadouken.mp3").play
     @image = Gosu::Image.new(window, ["assets/hadouken.png", "assets/hadouken-red.png"].sample)
     @image = Gosu::Image.new(window, "assets/hadouken-green.png") if @special
+    # @image = Gosu::Image.new(window, "assets/cole-head.png") if @special
     @x = playerx
     @y = playery
     @angle = playerangle
@@ -28,11 +30,11 @@ class Projectile
       @y %= 960
     end
   end
-  
+
   def draw
     @image.draw_rot(@x, @y, ZOrder::Projectile, @angle)
     self.accelerate
-  end 
+  end
 
   def collect_enemies(enemies, projectiles)
     enemies.reject! do |enemy|

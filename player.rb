@@ -4,6 +4,7 @@ class Player
   # Initializes the player object, takes a window where the image should be drawn
   def initialize(window)
     @image = Gosu::Image.new(window, "assets/mario.png", false)
+    # @image = Gosu::Image.new(window, ["assets/brooks.png", "assets/cole-sm.png"].sample, false)
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
     @x = @y = @vel_x = @vel_y = @angle = 0.0
     $score = 0
@@ -25,11 +26,11 @@ class Player
     @vel_x += Gosu::offset_x(@angle, 0.5)
     @vel_y += Gosu::offset_y(@angle, 0.5)
   end
-  
+
   def decelerate
     @vel_x -= Gosu::offset_x( @angle, 0.5)
     @vel_y -= Gosu::offset_y( @angle, 0.5)
-  end  
+  end
 
   def move
     @x += @vel_x
