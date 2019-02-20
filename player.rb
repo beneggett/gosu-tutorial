@@ -3,7 +3,7 @@ class Player
   attr_reader :x, :y, :angle
   # Initializes the player object, takes a window where the image should be drawn
   def initialize(window)
-    @image = Gosu::Image.new(window, "assets/peppa.png", false)
+    @image = Gosu::Image.new(window, "assets/mario.png", false)
     # @image = Gosu::Image.new(window, ["assets/brooks.png", "assets/cole-sm.png"].sample, false)
     @beep = Gosu::Sample.new(window, "assets/coin_sound.wav")
     @x = @y = @vel_x = @vel_y = @angle = 0.0
